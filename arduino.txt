@@ -1,0 +1,79 @@
+
+
+const int IN1 = 5;
+const int IN2 = 3;
+const int PWM = 6;
+
+bool shouldTurnRight = false;
+bool shouldTurnLeft = false;
+
+void setup() {
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(PWM, OUTPUT);
+
+  // Start serial communication with a baud rate of 9600
+  Serial.begin(9600);
+
+  // Wait for the serial connection to be established
+  while (!Serial) {
+    // Do nothing
+  }
+}
+
+void loop() {
+  // Check for commands from serial
+  if (Serial.available() > 0) {
+    String command = Serial.readStringUntil('\n');
+    if (command == "right") {
+      shouldTurnRight = true;
+    } else if (command == "left") {
+      shouldTurnLeft = true;
+    }
+  }
+
+  // Check if we should turn right
+  if (shouldTurnRight) {
+    turn_right();
+    shouldTurnRight = false; // Reset the flag
+  }
+
+  // Check if we should turn left
+  if (shouldTurnLeft) {
+    turn_left();
+    shouldTurnLeft = false; // Reset the flag
+  }
+
+  // Your existing code
+  // Serial.println("Hello Em");
+  // delay(1000);
+}
+
+void turn_right() {
+  Motor_Forward(200); // Forward, PWM setting 0-255
+  delay(3000);
+  Motor_Brake();
+}
+
+void turn_left() {
+  Motor_Backward(200); // Forward, PWM setting 0-255
+  delay(3000);
+  Motor_Brake();
+}
+
+void Motor_Forward(int Speed) {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  analogWrite(PWM, Speed);
+}
+
+void Motor_Backward(int Speed) {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  analogWrite(PWM, Speed);
+}
+
+void Motor_Brake() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+}
